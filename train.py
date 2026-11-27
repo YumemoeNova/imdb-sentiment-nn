@@ -16,12 +16,13 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 from sklearn.model_selection import train_test_split
 from torch import nn
 
+from data.prepare_data import COURSE_REVISION, DATASET_SHA256, DATASET_URL, DEFAULT_OUTPUT
 from model import DROPOUT, HIDDEN_DIM, LABELS, MAX_FEATURES, PREPROCESSING
 from model import SentimentNetwork, clean_text
 
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_DATA = ROOT / "data" / "imdb_balanced_10k.csv"
+DEFAULT_DATA = DEFAULT_OUTPUT
 ARTIFACTS = ("model.pt", "vectorizer.pkl", "config.json", "metrics.json")
 LABEL_IDS = {"0": 0, "1": 1, "neg": 0, "pos": 1, "negative": 0, "positive": 1}
 SEED = 42
@@ -79,6 +80,10 @@ def batch_logits(network, features, indices):
 
 
 def train(data: Path, output_dir: Path, epochs: int) -> dict:
+    digest = hashlib.sha256(data.read_bytes()).hexdigest()
+    if data.resolve() == DEFAULT_DATA and digest != DATASET_SHA256:
+        raise ValueError("The default CSV does not match the course file. Run python data/prepare_data.py.")
+
     torch.manual_seed(SEED)
     torch.set_num_threads(2)
     rng = np.random.default_rng(SEED)
@@ -95,6 +100,10 @@ def train(data: Path, output_dir: Path, epochs: int) -> dict:
     test_features = vectorizer.transform(test_texts)
     targets = torch.tensor(train_labels, dtype=torch.long)
 
+    dataset = {"filename": data.name, "sha256": digest}
+    if digest == DATASET_SHA256:
+        dataset.update(source_url=DATASET_URL, source_revision=COURSE_REVISION)
+
     config = {
         "input_dim": train_features.shape[1],
         "hidden_dim": HIDDEN_DIM,
@@ -106,7 +115,7 @@ def train(data: Path, output_dir: Path, epochs: int) -> dict:
             "learning_rate": LEARNING_RATE,
         },
         "versions": {"torch": torch.__version__, "scikit_learn": sklearn.__version__},
-        "dataset": {"filename": data.name, "sha256": hashlib.sha256(data.read_bytes()).hexdigest()},
+        "dataset": dataset,
         "git_commit": os.environ.get("GITHUB_SHA"),
     }
     network = SentimentNetwork(config["input_dim"], HIDDEN_DIM, DROPOUT)

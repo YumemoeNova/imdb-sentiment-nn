@@ -16,6 +16,13 @@ MODEL_NAME = "imdb-sentiment-nn"
 
 def model_card(config: dict, metrics: dict, github_repo: str, run_id: str) -> str:
     source = config["git_commit"]
+    dataset = config["dataset"]
+    dataset_description = f"The training CSV was `{dataset['filename']}`."
+    if "source_url" in dataset:
+        dataset_description = (
+            f"Training used the [course CSV `{dataset['filename']}`]({dataset['source_url']}). "
+            "After deduplication, it was stratified into an 80% training and 20% test split with seed 42."
+        )
     return f"""---
 language:
 - en
@@ -34,9 +41,10 @@ It combines word unigram and bigram TF-IDF with a one-hidden-layer PyTorch netwo
 
 - [Source code and inference instructions](https://github.com/{github_repo}/tree/{source})
 - [GitHub Actions training run](https://github.com/{github_repo}/actions/runs/{run_id})
-- [Stanford IMDb source dataset](https://huggingface.co/datasets/stanfordnlp/imdb)
 
 ## Evaluation
+
+{dataset_description}
 
 The held-out test set contains {metrics['test_samples']:,} reviews. Training used
 {metrics['train_samples']:,} reviews. The TF-IDF vocabulary was fitted on the training split.
@@ -48,9 +56,9 @@ The held-out test set contains {metrics['test_samples']:,} reviews. Training use
 | Macro precision | {metrics['test_macro_precision']:.4f} |
 | Macro recall | {metrics['test_macro_recall']:.4f} |
 
-The training CSV and its SHA-256 are identified in `config.json`. Use the linked
-repository's `predict.py` for inference. The scores are softmax outputs and have
-not been calibrated. Accuracy may be lower for sarcasm, mixed opinions, other languages,
+The input SHA-256 and any pinned source revision are recorded in `config.json`.
+Use the linked repository's `predict.py` for inference. The softmax scores are not
+calibrated. Accuracy may be lower for sarcasm, mixed opinions, other languages,
 and text outside the movie-review domain.
 """
 
