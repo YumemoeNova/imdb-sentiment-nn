@@ -11,7 +11,7 @@ from huggingface_hub import HfApi
 from train import ARTIFACTS, ROOT
 
 
-MODEL_NAME = "imdb-sentiment-nn"
+MODEL_NAME = "imdb-sentiment-nn-course-10k"
 
 
 def model_card(config: dict, metrics: dict, github_repo: str, run_id: str) -> str:

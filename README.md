@@ -4,7 +4,7 @@ Binary sentiment classification for English IMDb movie reviews. The pipeline lea
 TF-IDF representation and a small PyTorch neural network, evaluates on held-out reviews,
 and publishes the model and metrics to Hugging Face from GitHub Actions.
 
-[Published Hugging Face model](https://huggingface.co/Fetty0707/imdb-sentiment-nn) · [GitHub Actions runs](https://github.com/YumemoeNova/imdb-sentiment-nn/actions/workflows/train-and-upload.yml)
+[Published Hugging Face model](https://huggingface.co/Fetty0707/imdb-sentiment-nn-course-10k) · [GitHub Actions runs](https://github.com/YumemoeNova/imdb-sentiment-nn/actions/workflows/train-and-upload.yml)
 
 ## Data and model
 
@@ -55,7 +55,7 @@ To use this project's published model, run the following from the repository roo
 Add `--revision COMMIT` to select a particular published version.
 
 ```sh
-python predict.py --hf-repo Fetty0707/imdb-sentiment-nn "A surprisingly moving story."
+python predict.py --hf-repo Fetty0707/imdb-sentiment-nn-course-10k "A surprisingly moving story."
 ```
 
 Only load `vectorizer.pkl` from projects you trust. Predictions are intended for
@@ -66,7 +66,7 @@ English movie reviews, and the softmax probabilities are not calibrated.
 1. Create a [Hugging Face access token](https://huggingface.co/settings/tokens) with write permission.
 2. Open the project's **Settings → Secrets and variables → Actions** on GitHub and add a
    repository secret named `HF_TOKEN`. The workflow defaults to the token owner's
-   `imdb-sentiment-nn` model repository and creates it as public on the first run.
+   `imdb-sentiment-nn-course-10k` model repository and creates it as public on the first run.
    To point at a different model repository, set an Actions repository variable named `HF_REPO_ID`
    to `owner/name`. If using a token scoped to a single existing repository, create an empty
    public model repository first and grant the token write access to it.
