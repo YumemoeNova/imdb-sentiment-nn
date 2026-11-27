@@ -4,7 +4,7 @@ Binary sentiment classification for English IMDb movie reviews. The pipeline lea
 TF-IDF representation and a small PyTorch neural network, evaluates on held-out reviews,
 and publishes the model and metrics to Hugging Face from GitHub Actions.
 
-[GitHub Actions runs](https://github.com/YumemoeNova/imdb-sentiment-nn/actions/workflows/train-and-upload.yml)
+[Published Hugging Face model](https://huggingface.co/Fetty0707/imdb-sentiment-nn) · [GitHub Actions runs](https://github.com/YumemoeNova/imdb-sentiment-nn/actions/workflows/train-and-upload.yml)
 
 ## Data and model
 
@@ -46,6 +46,7 @@ The trainer accepts `text` or `review` and `label` or `sentiment` columns, with
 Without one, training uses a deterministic stratified 80/20 split. For CI, the input
 CSV must be available to the runner. If the course allows redistribution, commit the
 provided 10K CSV at the default path to have the preparation step use it as-is.
+The path is ignored by default, so stage that specific file with `git add -f data/imdb_balanced_10k.csv`.
 An authorized external dataset URL can also be integrated into the preparation step.
 
 ## Artifacts
@@ -57,11 +58,11 @@ An authorized external dataset URL can also be integrated into the preparation s
 | `config.json` | Network settings, labels, dependencies, data hash and Git commit |
 | `metrics.json` | Held-out metrics and sample counts |
 
-For a published model, use the same project code and replace `OWNER` with the Hugging Face username.
+To use this project's published model, run the following from the repository root.
 Add `--revision COMMIT` to select a particular published version.
 
 ```sh
-python predict.py --hf-repo OWNER/imdb-sentiment-nn "A surprisingly moving story."
+python predict.py --hf-repo Fetty0707/imdb-sentiment-nn "A surprisingly moving story."
 ```
 
 Only load `vectorizer.pkl` from projects you trust. Predictions are intended for
