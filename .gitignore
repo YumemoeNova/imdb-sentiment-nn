@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+data/*.csv
+model/model.pt
+model/vectorizer.pkl
+model/config.json
+model/metrics.json
